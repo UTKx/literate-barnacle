@@ -1,7 +1,4 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/git,
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,
-
 #!! ERROR:  is undefined. Use list command to see defined gitignore types !!#
 
 ### Git ###
@@ -19,10 +16,6 @@
 *_LOCAL_*.txt
 *_REMOTE_*.txt
 
-# End of https://www.toptal.com/developers/gitignore/api/git,
-
-# Created by https://www.toptal.com/developers/gitignore/api/django,git,linux,python,visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=django,git,linux,python,visualstudiocode
 
 ### Django ###
 *.log
@@ -269,4 +262,4 @@ dmypy.json
 # Ignore all local history of files
 .history
 
-# End of https://www.toptal.com/developers/gitignore/api/django,git,linux,python,visualstudiocode
+
