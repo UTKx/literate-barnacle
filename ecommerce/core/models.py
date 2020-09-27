@@ -12,8 +12,8 @@ class Item(models.Model):
 class OrderItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.title
+    # def __str__(self):
+        # return self.title
 
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
