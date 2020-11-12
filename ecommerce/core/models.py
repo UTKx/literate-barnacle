@@ -6,13 +6,14 @@ CATEGORY_CHOICES = (
     ('S', 'Shirt'),
     ('SW', 'Sport Wear'),
     ('OW', 'Outwear'),
-    )
+)
 
 LABEL_CHOICES = (
     ('P', 'primary'),
     ('S', 'secondary'),
     ('D', 'danger'),
-    )
+)
+
 
 # Create your models here.
 class Item(models.Model):
@@ -25,20 +26,19 @@ class Item(models.Model):
     description = models.TextField()
 
     def get_absolute_url(self):
-        return reverse('core:product', kwargs = {
-                'slug' : self.slug
-            })
+        return reverse('core:product', kwargs={
+            'slug': self.slug
+        })
 
     def get_add_to_cart_url(self):
-        return reverse('core:add-to-cart', kwargs = {
-                'slug' : self.slug
-            })
-
+        return reverse('core:add-to-cart', kwargs={
+            'slug': self.slug
+        })
 
     def get_remove_from_cart_url(self):
-        return reverse('core:remove-from-cart', kwargs = {
-                'slug' : self.slug
-            })
+        return reverse('core:remove-from-cart', kwargs={
+            'slug': self.slug
+        })
 
 
 class OrderItem(models.Model):

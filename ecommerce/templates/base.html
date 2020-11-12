@@ -41,6 +41,7 @@
       }
     }
 
+
   </style>
 </head>
 
@@ -48,27 +49,27 @@
 
 <body>
 
-  <div class="mt-5 pt-4">
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" role="alert">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
+<div class="mt-5 pt-4">
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}" role="alert">
+    {{ message }}
   </div>
+  {% endfor %}
+  {% endif %}
+</div>
 
-  {% block content %}
-  {% endblock content %}
+{% block content %}
+{% endblock content %}
 
-  {% block extra_body %}
-  {% endblock %}
+{% block extra_body %}
+{% endblock %}
 
-  {% include 'footer.html' %}
-  {% include 'scripts.html' %}
+{% include 'footer.html' %}
+{% include 'scripts.html' %}
 
-  {% block extra_scripts %}
-  {% endblock extra_scripts %}
+{% block extra_scripts %}
+{% endblock extra_scripts %}
 
 </body>
 </html>
