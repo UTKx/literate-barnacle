@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import ListView, DetailView, View
-from .models import Item, OrderItem, Order
+from .models import Item, OrderItem, Order, BillingAddress
+from .forms import CheckoutForm
 
 
 class Home(ListView):
@@ -21,7 +22,7 @@ class Product(DetailView):
 
 
 class OrderSummary(LoginRequiredMixin, View):
-    def get(self):
+    def get(self, *args, **kwargs):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             context = {
@@ -120,5 +121,46 @@ def remove_single_item_from_cart(request, slug):
         return redirect('core:product', slug=slug)
 
 
-def checkout(request):
-    return render(request, 'checkout.html', )
+class Checkout(View):
+    def get(self, *args, **kwargs):
+        form = CheckoutForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, 'checkout.html', context)
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if form.is_valid():
+                name = form.cleaned_data('name')
+                address_1 = form.cleaned_data('address_1')
+                address_2 = form.cleaned_data('address_2')
+                country = form.cleaned_data('country')
+                state = form.cleaned_data('state')
+                zip = form.cleaned_data('zip')
+                # same_shipping_address = form.cleaned_data('same_shipping_address')
+                # save_info = form.cleaned_data('save_info')
+                payment_option = form.cleaned_data('payment_option')
+
+                billing_address = BillingAddress(
+                    user=self.request.user,
+                    name=name,
+                    address_1=address_1,
+                    address_2=address_2,
+                    country=country,
+                    state=state,
+                    zip=zip
+                )
+                billing_address.save()
+                order.billing_address = billing_address
+                order.save()
+
+                return redirect('core:checkout')
+            messages.warning(self.request, 'Failed Checkout!!')
+            return redirect('core:checkout')
+
+        except ObjectDoesNotExist:
+            messages.error(self.request, 'You do not have an active order')
+            return redirect('core:summary')

@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     # crispy
     'crispy_forms',
 
+    'django_countries',
+
     # custom apps
     'core'
 ]

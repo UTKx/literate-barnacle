@@ -9,7 +9,7 @@
 
     <div class="table-responsive text-nowrap">
 
-      <h2>Order Summary</h2>
+      <h2 class="my-5">Order Summary</h2>
       <table class="table">
         <thead>
         <tr>
@@ -24,7 +24,7 @@
         <tbody>
         {% for order_item in object.items.all %}
         <tr>
-          <th scope="row">{{ forloop.counter}}</th>
+          <th scope="row">{{ forloop.counter }}</th>
           <td>{{ order_item.item.title }}</td>
           <td>₹{{ order_item.item.price }}</td>
           <td>₹{{ order_item.item.discount_price }}</td>
