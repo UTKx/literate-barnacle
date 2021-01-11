@@ -12,7 +12,7 @@ from .forms import CheckoutForm
 
 import stripe
 
-stripe.api_key = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class Home(ListView):
@@ -24,19 +24,6 @@ class Home(ListView):
 class Product(DetailView):
     model = Item
     template_name = 'product.html'
-
-
-class OrderSummary(LoginRequiredMixin, View):
-    def get(self, *args, **kwargs):
-        try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            context = {
-                'object': order
-            }
-            return render(self.request, 'order_summary.html', context)
-        except ObjectDoesNotExist:
-            messages.error(self.request, 'You do not have an active order')
-            return redirect('/')
 
 
 @login_required
@@ -124,6 +111,19 @@ def remove_single_item_from_cart(request, slug):
     else:
         messages.info(request, 'You do not have an active order')
         return redirect('core:product', slug=slug)
+
+
+class OrderSummary(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            context = {
+                'object': order
+            }
+            return render(self.request, 'order_summary.html', context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, 'You do not have an active order')
+            return redirect('/')
 
 
 class Checkout(View):
