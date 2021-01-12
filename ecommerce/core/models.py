@@ -26,6 +26,7 @@ class Item(models.Model):
     label = models.CharField(choices=LABEL_CHOICES, max_length=1)
     slug = models.SlugField()
     description = models.TextField()
+    image = models.ImageField()
 
     def get_absolute_url(self):
         return reverse('core:product', kwargs={
@@ -41,6 +42,9 @@ class Item(models.Model):
         return reverse('core:remove-from-cart', kwargs={
             'slug': self.slug
         })
+
+    class Meta:
+        ordering = ['id']
 
 
 class OrderItem(models.Model):
