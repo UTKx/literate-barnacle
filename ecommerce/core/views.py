@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import ListView, DetailView, View
-from .models import Item, OrderItem, Order, BillingAddress, Payment
-from .forms import CheckoutForm
+from .models import Item, OrderItem, Order, BillingAddress, Payment, DiscountCode
+from .forms import CheckoutForm, DiscountCodeForm
 
 import stripe
 
@@ -128,13 +128,19 @@ class OrderSummary(LoginRequiredMixin, View):
 
 class Checkout(View):
     def get(self, *args, **kwargs):
-        form = CheckoutForm()
-        order = Order.objects.get(user=self.request.user, ordered=False)
-        context = {
-            'form': form,
-            'order': order
-        }
-        return render(self.request, 'checkout.html', context)
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            form = CheckoutForm()
+            context = {
+                'form': form,
+                'disc_codeform': DiscountCodeForm(),
+                'order': order,
+                'DISPLAY_DISC_CODE_FORM': True
+            }
+            return render(self.request, 'checkout.html', context)
+        except ObjectDoesNotExist:
+            messages.info(self.request, 'You do not have an active order')
+            return redirect('core:checkout')
 
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
@@ -183,10 +189,15 @@ class PaymentView(View):
     def get(self, *args, **kwargs):
         print('in get')
         order = Order.objects.get(user=self.request.user, ordered=False)
-        context = {
-            'order': order
-        }
-        return render(self.request, 'payment.html', context)
+        if order.billing_address:
+            context = {
+                'order': order,
+                'DISPLAY_DISC_CODE_FORM': False
+            }
+            return render(self.request, 'payment.html', context)
+        else:
+            messages.error(self.request, 'You have not added billing address.')
+            return redirect('core:checkout')
 
     def post(self, *args, **kwargs):
         print('in post')
@@ -208,6 +219,11 @@ class PaymentView(View):
             payment.user = self.request.user
             payment.amount = order.get_total()
             payment.save()
+
+            order_items = order.items.all()
+            order_items.update(ordered=True)
+            for item in order_items:
+                item.save()
 
             order.ordered = True
             order.payment = payment
@@ -248,3 +264,28 @@ class PaymentView(View):
             # Something else happened, completely unrelated to Stripe
             messages.error(self.request, "A serious error occured. We have been notified.")
             return redirect('/')
+
+
+def get_code(request, code):
+    try:
+        disc_code = DiscountCode.objects.get(code=code)
+        return disc_code
+    except ObjectDoesNotExist:
+        messages.info(request, 'This code does not exist.')
+        return redirect('core:checkout')
+
+
+class ApplyDiscCode(View):
+    def post(self, *args, **kwargs):
+        form = DiscountCodeForm(self.request.POST or None)
+        if form.is_valid():
+            try:
+                code = form.cleaned_data.get('code')
+                order = Order.objects.get(user=self.request.user, ordered=False)
+                order.disc_code = get_code(self.request, code)
+                order.save()
+                messages.success(self.request, 'Code applied successfully.')
+                return redirect('core:checkout')
+            except ObjectDoesNotExist:
+                messages.info(self.request, 'You do not have an active order')
+                return redirect('core:checkout')
