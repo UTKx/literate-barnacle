@@ -9,6 +9,7 @@ from .views import (
     remove_single_item_from_cart,
     PaymentView,
     ApplyDiscCode,
+    RequestRefund
 )
 
 app_name = 'core'
@@ -23,4 +24,5 @@ urlpatterns = [
     path('apply-code/', ApplyDiscCode.as_view(), name='apply-code'),
     path('checkout/', Checkout.as_view(), name='checkout'),
     path('payment/<payment_option>', PaymentView.as_view(), name='payment'),
+    path('request-refund/', RequestRefund.as_view(), name='request-refund'),
 ]
