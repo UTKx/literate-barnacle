@@ -10,30 +10,35 @@ PAYMENT_OPTIONS = (
 
 
 class CheckoutForm(forms.Form):
-    name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
-        # 'placeholder': 'John Doe',
-        'class': 'form-control',
-    }))
-    address_1 = forms.CharField(max_length=200, widget=forms.TextInput(attrs={
-        # 'placeholder': '1234 Main St',
-        'class': 'form-control',
-    }))
-    address_2 = forms.CharField(max_length=200, widget=forms.TextInput(attrs={
-        # 'placeholder': 'Apartment or suite',
-        'class': 'form-control',
-    }))
-    country = CountryField(blank_label='Select country').formfield(
+    shipping_name = forms.CharField(required=False)
+    shipping_address1 = forms.CharField(required=False)
+    shipping_address2 = forms.CharField(required=False)
+    shipping_country = CountryField(blank_label='Select country').formfield(
+        required=False,
         widget=CountrySelectWidget(attrs={
             'class': 'custom-select d-block w-100',
         }))
-    state = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
-        'class': 'form-control',
-    }))
-    zip = forms.CharField(max_length=10, widget=forms.TextInput(attrs={
-        'class': 'form-control',
-    }))
-    same_shipping_address = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
-    save_info = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
+    shipping_state = forms.CharField(required=False)
+    shipping_zip = forms.CharField(required=False)
+
+    billing_name = forms.CharField(required=False)
+    billing_address1 = forms.CharField(required=False)
+    billing_address2 = forms.CharField(required=False)
+    billing_country = CountryField(blank_label='Select country').formfield(
+        required=False,
+        widget=CountrySelectWidget(attrs={
+            'class': 'custom-select d-block w-100',
+        }))
+    billing_state = forms.CharField(required=False)
+    billing_zip = forms.CharField(required=False)
+
+    same_billing_address = forms.BooleanField(required=False)
+    set_default_shipping = forms.BooleanField(required=False)
+    use_default_shipping = forms.BooleanField(required=False)
+
+    set_default_billing = forms.BooleanField(required=False)
+    use_default_billing = forms.BooleanField(required=False)
+
     payment_option = forms.ChoiceField(widget=forms.RadioSelect, choices=PAYMENT_OPTIONS)
 
 

@@ -16,6 +16,10 @@ LABEL_CHOICES = (
     ('D', 'danger'),
 )
 
+ADDRESS_CHOICES = (
+    ('B', 'Billing address'),
+    ('S', 'Shipping address'),
+)
 
 # Create your models here.
 class Item(models.Model):
@@ -79,7 +83,9 @@ class Order(models.Model):
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
     billing_address = models.ForeignKey(
-        'BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
+        'Address', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+    shipping_address = models.ForeignKey(
+        'Address', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
     disc_code = models.ForeignKey(
@@ -89,7 +95,6 @@ class Order(models.Model):
     received = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
-
 
     def __str__(self):
         return self.user.username
@@ -103,7 +108,7 @@ class Order(models.Model):
         return total
 
 
-class BillingAddress(models.Model):
+class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     address_1 = models.CharField(max_length=200)
@@ -111,6 +116,8 @@ class BillingAddress(models.Model):
     country = CountryField()
     state = models.CharField(max_length=100)
     zip = models.CharField(max_length=10)
+    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    default = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
